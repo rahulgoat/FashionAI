@@ -20,6 +20,7 @@ fashion_researcher = Agent(
     goal=f'Provide personalized outfit recommendations based on {prompt_line}',
     verbose=True,
     memory=True,
+    max_iter=5,
     backstory=(
         "With an impeccable sense of style and an eye for detail, you excel"
         " at curating outfits that not only match the occasion but also align"

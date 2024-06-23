@@ -2,7 +2,7 @@ from crewai import Task
 from tools import tool
 from agents import fashion_researcher
 
-# Research task
+
 fashion_task = Task(
   description=(
     "Generate personalized outfit recommendations based on user details."
