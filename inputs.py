@@ -1,0 +1,1 @@
+prompt_line="50 year old male prefers loose fit clothes, usually wears size small, loves blue, black colors, and has a budget of 100-500usd. This recommendation is for a casual occasion."
