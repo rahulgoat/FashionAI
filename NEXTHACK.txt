@@ -1,0 +1,8 @@
+								NEXTHACK
+
+to find sha 1 go to android studio open the project file, open the build.gradle and click open in editor option
+then go to terminal in android studio, type gradlew signinReport -->> hit ctrl+enter
+
+sha 1 
+
+F8:A8:4B:3D:DC:C5:DD:9C:85:06:B3:00:09:EB:95:76:AC:32:1B:AB
