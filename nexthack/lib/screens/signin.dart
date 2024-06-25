@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nexthack/reusable.dart';
-import 'package:nexthack/screens/chatscreen.dart';
 import 'package:nexthack/screens/signup.dart';
+import 'package:nexthack/screens/voicescreen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -49,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 signinsignupbutton(context, true, () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => chatscreen()));
+                      MaterialPageRoute(builder: (context) => VoiceScreen()));
                 }),
                 signupoption()
               ],

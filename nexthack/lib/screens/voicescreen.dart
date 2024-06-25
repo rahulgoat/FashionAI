@@ -2,24 +2,33 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nexthack/screens/chatscreen.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:nexthack/screens/camerascreen.dart';
-import 'package:nexthack/screens/voicescreen.dart';
 
-class chatscreen extends StatefulWidget {
-  const chatscreen({super.key});
+class VoiceScreen extends StatefulWidget {
+  const VoiceScreen({super.key});
 
   @override
-  State<chatscreen> createState() => _chatscreenState();
+  State<VoiceScreen> createState() => _VoiceScreenState();
 }
 
-class _chatscreenState extends State<chatscreen> {
+class _VoiceScreenState extends State<VoiceScreen> {
   List<Message> messages = [];
-  bool isMicSelected = false;
-  TextEditingController _controller = TextEditingController();
-  int selectedIndex = 1;
-  @override
+  bool isMicSelected = true;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
+  int selectedIndex = 0;
+
   void initState() {
     super.initState();
+    messages.add(Message(
+        content: 'Welcome! Press the microphone button to start.',
+        isUser: false));
+
+    _initSpeech();
   }
 
   Future<void> getGeminiResponse(String question) async {
@@ -69,82 +78,36 @@ class _chatscreenState extends State<chatscreen> {
     });
   }
 
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {
+      messages.add(Message(content: _lastWords, isUser: true));
+      getGeminiResponse(_lastWords);
+    });
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('NextHack'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(8.0),
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                Message message = messages[index];
-                return Align(
-                  alignment: message.isUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    margin:
-                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      color: message.isUser
-                          ? Colors.deepPurple[400]
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Text(
-                      message.content,
-                      style: TextStyle(
-                          color: message.isUser ? Colors.white : Colors.black),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (!isMicSelected)
-            Container(
-              color: Colors.grey[200],
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Type your question here',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      String question = _controller.text;
-                      if (question.isNotEmpty) {
-                        setState(() {
-                          messages
-                              .add(Message(content: question, isUser: true));
-                        });
-                        getGeminiResponse(question);
-                        _controller.clear();
-                      }
-                    },
-                    icon: Icon(Icons.send),
-                    color: Colors.deepPurple,
-                  ),
-                ],
-              ),
-            ),
-        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(0),
@@ -188,6 +151,59 @@ class _chatscreenState extends State<chatscreen> {
             ],
           ),
         ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Speak Up',
+                style: TextStyle(fontSize: 20.0),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(8.0),
+                itemCount: messages.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Message message = messages[index];
+                  return Align(
+                    alignment: message.isUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      decoration: BoxDecoration(
+                        color: message.isUser
+                            ? Colors.deepPurple[400]
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Text(
+                        message.content,
+                        style: TextStyle(
+                            color:
+                                message.isUser ? Colors.white : Colors.black),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed:
+            // If not yet listening for speech start, otherwise stop
+            _speechToText.isNotListening ? _startListening : _stopListening,
+        tooltip: 'Listen',
+        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
       ),
     );
   }
