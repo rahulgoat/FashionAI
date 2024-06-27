@@ -38,10 +38,9 @@ dependencies:
   http: ^1.2.0
   speech_to_text: ^6.6.2
   camera: ^0.10.5+9
-  gap: ^3.0.1
-  external_path: ^1.0.3
-  media_scanner: ^2.1.0
-  video_player: ^2.8.5
+  image_picker: ^1.0.8
+  dash_chat: ^1.1.16
+  google_generative_ai: ^0.4.3
 
 dev_dependencies:
   flutter_test:

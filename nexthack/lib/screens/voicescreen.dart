@@ -118,7 +118,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
             borderRadius: BorderRadius.circular(10), // Rounded corners
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               ToggleIconButton(
                   icon: Icons.mic_outlined,
@@ -128,7 +128,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => VoiceScreen()));
                   }),
-              SizedBox(width: 10),
               ToggleIconButton(
                   icon: Icons.keyboard_outlined,
                   isSelected: selectedIndex == 1,
@@ -137,7 +136,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => chatscreen()));
                   }),
-              SizedBox(width: 10),
               ToggleIconButton(
                   icon: Icons.camera_alt_outlined,
                   isSelected: selectedIndex == 2,

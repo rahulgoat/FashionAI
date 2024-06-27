@@ -1,17 +1,12 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:nexthack/screens/signin.dart';
 
-late List<CameraDescription> _cameras;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final cameras = await availableCameras();
-  runApp(MyApp(cameras: cameras));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final List<CameraDescription> cameras;
-  const MyApp({super.key, required this.cameras});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override

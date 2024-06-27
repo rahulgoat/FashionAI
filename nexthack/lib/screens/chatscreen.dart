@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nexthack/screens/camerascreen.dart';
+import 'package:nexthack/screens/imagepickscreen.dart';
+import 'package:nexthack/screens/signin.dart';
 import 'package:nexthack/screens/voicescreen.dart';
 
 class chatscreen extends StatefulWidget {
@@ -73,6 +75,18 @@ class _chatscreenState extends State<chatscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.keyboard_arrow_left),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SignInScreen()));
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            );
+          },
+        ),
         automaticallyImplyLeading: false,
         title: Text('NextHack'),
       ),
@@ -155,7 +169,7 @@ class _chatscreenState extends State<chatscreen> {
             borderRadius: BorderRadius.circular(10), // Rounded corners
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               ToggleIconButton(
                   icon: Icons.mic_outlined,
@@ -165,7 +179,6 @@ class _chatscreenState extends State<chatscreen> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => VoiceScreen()));
                   }),
-              SizedBox(width: 10),
               ToggleIconButton(
                   icon: Icons.keyboard_outlined,
                   isSelected: selectedIndex == 1,
@@ -174,7 +187,6 @@ class _chatscreenState extends State<chatscreen> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => chatscreen()));
                   }),
-              SizedBox(width: 10),
               ToggleIconButton(
                   icon: Icons.camera_alt_outlined,
                   isSelected: selectedIndex == 2,
