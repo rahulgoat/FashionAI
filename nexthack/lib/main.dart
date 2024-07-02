@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexthack/screens/signin.dart';
+import 'package:nexthack/screens/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const SignInScreen(),
+      home: const HomePage(),
     );
   }
 }

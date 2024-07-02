@@ -1,1 +1,6 @@
-const String GEMINI_API_KEY = "AIzaSyCKhUYONJJe5WJJSL7xQgvb22L38NALqX0";
+import 'package:flutter/material.dart';
+
+const Color primaryColor = Color(0xFF2967FF);
+const Color grayColor = Color(0xFF8D8D8E);
+
+const double defaultPadding = 16.0;
