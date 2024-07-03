@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nexthack/geminiapi.dart';
-import 'package:nexthack/outfit.dart';
 import 'package:nexthack/screens/budgetscreen.dart';
 import 'package:image_picker/image_picker.dart';
 

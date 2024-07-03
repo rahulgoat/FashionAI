@@ -30,7 +30,7 @@ class _NewsPageState extends State<NewsPage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage("assets/images.png"), fit: BoxFit.cover)),
         child: Padding(
@@ -63,22 +63,22 @@ class NewsCardSkelton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const Skeleton(height: 120, width: 120),
-        const SizedBox(width: defaultPadding),
+        Skeleton(height: 120, width: 120),
+        SizedBox(width: defaultPadding),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Skeleton(width: 80),
-              const SizedBox(height: defaultPadding / 2),
-              const Skeleton(),
-              const SizedBox(height: defaultPadding / 2),
-              const Skeleton(),
-              const SizedBox(height: defaultPadding / 2),
+              Skeleton(width: 80),
+              SizedBox(height: defaultPadding / 2),
+              Skeleton(),
+              SizedBox(height: defaultPadding / 2),
+              Skeleton(),
+              SizedBox(height: defaultPadding / 2),
               Row(
-                children: const [
+                children: [
                   Expanded(
                     child: Skeleton(),
                   ),

@@ -120,97 +120,100 @@ class _ImagePickScreenState extends State<ImagePickScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           automaticallyImplyLeading: true,
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             IconButton(
                 onPressed: () {
                   _showPicker(context: context);
                 },
-                icon: Icon(Icons.attach_file)),
+                icon: const Icon(Icons.attach_file)),
             IconButton(
                 onPressed: () {
                   _showcamera(context: context);
                 },
-                icon: Icon(Icons.camera_alt_outlined)),
+                icon: const Icon(Icons.camera_alt_outlined)),
           ],
         ),
         body: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/genderpage.jpg"),
               fit: BoxFit.cover,
             ),
           ),
           child: SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 30),
-                      Text(
-                        'Wait! Genie is analyzing you out 🌟',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 30),
+                        Text(
+                          'Wait! Genie is analyzing you out 🌟',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Georgia"),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Allow camera accessibility to analyze you.',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
+                        SizedBox(height: 5),
+                        Text(
+                          'Allow camera accessibility to analyze you.',
+                          style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 14,
+                              fontFamily: "Georgia"),
                         ),
-                      ),
-                      SizedBox(
-                        height: 70,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 430.0,
-                    width: 430.0,
-                    child: galleryFile == null
-                        ? const Center(child: Text('Sorry nothing selected!!'))
-                        : Center(child: Image.file(galleryFile!)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (galleryFile != null) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OccasionScreen(
-                                      gender: widget.gender,
-                                      xfilePick: xfilePick!,
-                                    )));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Nothing is selected')));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        SizedBox(
+                          height: 70,
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      'Let\'s go Genie  ✨',
-                      style: TextStyle(color: Colors.white),
+                    SizedBox(
+                      height: 430.0,
+                      width: 430.0,
+                      child: galleryFile == null
+                          ? const Center(
+                              child: Text('Sorry nothing selected!!'))
+                          : Center(child: Image.file(galleryFile!)),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
+                    ElevatedButton(
+                      onPressed: () {
+                        if (galleryFile != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OccasionScreen(
+                                        gender: widget.gender,
+                                        xfilePick: xfilePick!,
+                                      )));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Nothing is selected')));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 15),
+                      ),
+                      child: const Text(
+                        'Let\'s go Genie  ✨',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 100,
+                    )
+                  ],
+                ),
               ),
             ),
           ),

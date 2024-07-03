@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:card_swiper/card_swiper.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:nexthack/serper.dart';
 
 class ProductsPage extends StatefulWidget {
   final Future<List<Map<String, dynamic>>>? products;
+  final String gender;
+  final String budget;
+  final Map<String, dynamic> outfit;
 
   ProductsPage({
     Key? key,
     this.products,
+    required this.gender,
+    required this.budget,
+    required this.outfit,
   }) : super(key: key);
 
   @override
@@ -14,13 +24,31 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  Future<List<Map<String, dynamic>>>? _products;
+  late Future<List<Map<String, dynamic>>> _products;
+  List<Map<String, dynamic>> _productList = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _products = widget.products;
+    _products = widget.products ?? Future.value([]);
+    _products.then((value) {
+      setState(() {
+        _productList = value;
+      });
+    });
+  }
+
+  Future<void> _fetchProducts(String things) async {
+    Serper serper = Serper();
+    List<Map<String, dynamic>> products = await serper.serpercall(
+      widget.gender,
+      widget.budget,
+      widget.outfit,
+      things,
+    );
+    setState(() {
+      _productList = products;
+    });
   }
 
   @override
@@ -49,76 +77,56 @@ class _ProductsPageState extends State<ProductsPage> {
                   fontSize: 18,
                 ),
               ),
+              const SizedBox(
+                height: 15,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => _fetchProducts("top"),
+                      icon: const Icon(Icons.checkroom),
+                      label: const Text("Top"),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => _fetchProducts("bottom"),
+                      icon: const Icon(Icons.accessibility_new),
+                      label: const Text("Bottom"),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => _fetchProducts("shoes"),
+                      icon: const Icon(Icons.directions_run),
+                      label: const Text("Shoes"),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => _fetchProducts("accessories"),
+                      icon: const Icon(Icons.watch),
+                      label: const Text("Accessories"),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
-                child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: _products,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No outfits found'));
-                      } else {
-                        List<Map<String, dynamic>> outfits = snapshot.data!;
-                        return ListView.builder(
-                          itemCount: outfits.length,
-                          itemBuilder: (context, index) {
-                            final product = outfits[index];
-                            return Container(
-                              margin: const EdgeInsets.all(8.0),
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.network(
-                                    product['imageUrl'],
-                                    height: 150,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Text(
-                                    product['title'],
-                                    style: const TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Text(
-                                    'Price: ${product['price']}',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      _launchURL(context, product['link']);
-                                    },
-                                    child: const Text('View Product'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    }),
+                child: _productList.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildSwiperCards(),
               ),
             ],
           ),
@@ -127,9 +135,106 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
+  Widget _buildSwiperCards() {
+    return Swiper(
+      itemBuilder: (BuildContext context, int index) {
+        return _buildCard(_productList[index]);
+      },
+      itemCount: _productList.length,
+      layout: SwiperLayout.STACK,
+      itemWidth: MediaQuery.of(context).size.width - 2 * 40,
+      itemHeight: MediaQuery.of(context).size.height * 0.7,
+      curve: Curves.easeOutCubic,
+      onIndexChanged: (index) {
+        setState(() {
+          // Handle card index change if needed
+        });
+      },
+      onTap: (index) {
+        // Handle card tap if needed
+      },
+    );
+  }
+
+  Widget _buildCard(Map<String, dynamic> product) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width * 0.75,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.5),
+            //     spreadRadius: 5,
+            //     blurRadius: 7,
+            //     offset: const Offset(0, 3),
+            //   ),
+            // ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(8.0)),
+                child: Image.network(
+                  product['imageUrl'],
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  alignment: AlignmentDirectional.topStart,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      product['title'],
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15.0),
+                    Text(
+                      'Price: ${product['price']}',
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.grey[900],
+                      ),
+                    ),
+                    const SizedBox(height: 15.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        _launchURL(context, product['link']);
+                      },
+                      child: const Text('View Product'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   void _launchURL(BuildContext context, String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    Uri uri = Uri.parse(url);
+    if (await canLaunch(uri.toString())) {
+      await launch(uri.toString());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not launch $url')),

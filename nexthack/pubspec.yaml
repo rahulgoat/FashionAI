@@ -19,6 +19,10 @@ dependencies:
   google_generative_ai: ^0.4.3
   url_launcher: ^6.3.0
   google_fonts: ^6.2.1
+  card_swiper: ^3.0.1
+  cached_network_image: ^3.3.1
+  material_design_icons_flutter: ^7.0.7296
+  
 
 dev_dependencies:
   flutter_test:

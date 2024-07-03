@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nexthack/geminiapi.dart';
 import 'package:nexthack/screens/productscreen.dart';
 import 'package:nexthack/serper.dart';
 
@@ -21,19 +22,31 @@ class LoadingGenie extends StatefulWidget {
   State<LoadingGenie> createState() => _LoadingGenieState();
 }
 
-class _LoadingGenieState extends State<LoadingGenie> {
+class _LoadingGenieState extends State<LoadingGenie>
+    with TickerProviderStateMixin {
   Future<List<Map<String, dynamic>>>? _futureOutfits;
+  List<Map<String, dynamic>> _outfits = [];
+  bool _outfitsAdded = false;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     _futureOutfits = widget.futureOutfits;
+    _pageController = PageController(viewportFraction: 0.8);
   }
 
   String getFirstSentence(String text) {
     RegExp exp = RegExp(r'^.*?[\.!\?]', multiLine: true);
     Iterable<RegExpMatch> matches = exp.allMatches(text);
     return matches.isNotEmpty ? matches.first.group(0) ?? text : text;
+  }
+
+  Future<void> _addOutfits(List<Map<String, dynamic>> outfits) async {
+    setState(() {
+      _outfits = outfits;
+      _outfitsAdded = true;
+    });
   }
 
   @override
@@ -44,6 +57,7 @@ class _LoadingGenieState extends State<LoadingGenie> {
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
       body: DecoratedBox(
         decoration: const BoxDecoration(
@@ -52,129 +66,178 @@ class _LoadingGenieState extends State<LoadingGenie> {
             fit: BoxFit.cover,
           ),
         ),
-        child: SizedBox(
-          height: 800,
-          child: SafeArea(
-            child: Column(
-              children: [
-                const Text('Outfits which will be perfect for you 🌟',
-                    style: TextStyle(
-                      fontFamily: 'Georgia',
-                      color: Colors.white,
-                      fontSize: 18,
-                    )),
-                const SizedBox(height: 5),
-                const Text(
-                  'Select your preferred outfit.',
+        child: SafeArea(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: Text(
+                  'Outfits which will be perfect for you 🌟',
                   style: TextStyle(
                     fontFamily: 'Georgia',
-                    color: Colors.white54,
-                    fontSize: 14,
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                Expanded(
-                  flex: 1,
-                  child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: _futureOutfits,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No outfits found'));
-                      } else {
+              ),
+              const Text(
+                'Select your preferred outfit.',
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  color: Colors.white54,
+                  fontSize: 14,
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _futureOutfits,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Color.fromRGBO(114, 80, 161, 1),
+                          color: Colors.grey,
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              color: Colors.deepPurple,
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text(
+                              "Redirecting to Image page",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      if (!_outfitsAdded) {
                         List<Map<String, dynamic>> outfits = snapshot.data!;
-                        return Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: ListView.builder(
-                            itemCount: outfits.length,
-                            itemBuilder: (context, index) {
-                              Map<String, dynamic> outfit = outfits[index];
-                              return Container(
-                                margin: const EdgeInsets.all(8.0),
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: const Color.fromRGBO(114, 80, 161, 1),
-                                  gradient: const LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: <Color>[
-                                        Color.fromRGBO(114, 80, 161, 1),
-                                        Color.fromARGB(255, 138, 79, 152),
-                                      ]),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  // boxShadow: [
-                                  //   BoxShadow(
-                                  //     color: Colors.grey.withOpacity(0.5),
-                                  //     spreadRadius: 5,
-                                  //     blurRadius: 7,
-                                  //     offset: Offset(0, 3),
-                                  //   ),
-                                  // ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            outfit['Outfit_name'] ?? 'No Name',
-                                            style: TextStyle(
-                                              color: Colors.grey[300],
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8.0),
-                                          Text(
-                                            getFirstSentence(
-                                                outfit['description'] ??
-                                                    'No Description'),
-                                            textAlign: TextAlign.justify,
-                                            style: const TextStyle(
-                                              fontSize: 16.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const VerticalDivider(
-                                      color: Colors.black,
-                                      thickness: 1,
-                                      width: 10,
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_forward),
-                                      color: Colors.grey[300],
-                                      onPressed: () {
-                                        Future<List<Map<String, dynamic>>>
-                                            products = Serper().serpercall(
-                                                widget.gender,
-                                                widget.budget,
-                                                outfit);
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ProductsPage(
-                                                        products: products)));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _addOutfits(outfits);
+                        });
+                      }
+                      return _buildCarousel();
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCarousel() {
+    return PageView.builder(
+      itemCount: _outfits.length,
+      itemBuilder: (context, index) {
+        return _buildItem(_outfits[index]);
+      },
+      controller: _pageController,
+      onPageChanged: (index) {
+        // Handle page change if needed
+      },
+    );
+  }
+
+  Widget _buildItem(Map<String, dynamic> outfit) {
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height:
+            MediaQuery.of(context).size.height - 590, // Adjust width as needed
+        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(114, 80, 161, 1),
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Color.fromRGBO(114, 80, 161, 1),
+              Color.fromARGB(255, 138, 79, 152),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          height: 155,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      outfit['Outfit_name'] ?? 'No Name',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    Text(
+                      getFirstSentence(
+                          outfit['description'] ?? 'No Description'),
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      color: Colors.grey[300],
+                      onPressed: () {
+                        Future<List<Map<String, dynamic>>> products =
+                            Serper().serpercall(
+                          widget.gender,
+                          widget.budget,
+                          outfit,
+                          'top',
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductsPage(
+                              products: products,
+                              budget: widget.budget,
+                              gender: widget.gender,
+                              outfit: outfit,
+                            ),
                           ),
                         );
-                      }
-                    },
-                  ),
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 10), // Space between text and icon
+            ],
           ),
         ),
       ),

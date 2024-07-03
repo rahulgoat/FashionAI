@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexthack/fastapi.dart';
-import 'package:nexthack/outfit.dart';
+
 //import 'package:nexthack/outfit.dart';
 
 class GeminiApi {

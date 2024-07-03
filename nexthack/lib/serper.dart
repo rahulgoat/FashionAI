@@ -2,19 +2,35 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Serper {
-  Future<List<Map<String, dynamic>>> serpercall(
-      String gender, String budget, Map<String, dynamic> outfit) async {
-    String top = outfit['top'];
-    String bottom = outfit['bottom'];
-    String shoes = outfit['shoes'];
-    String accessories = outfit['accessories'];
+  Future<List<Map<String, dynamic>>> serpercall(String gender, String budget,
+      Map<String, dynamic> outfit, String things) async {
     const serperApiKey = '2bda1354efbfdaee475b00017a4c91deb875d3ec';
+    String wear = '';
+    switch (things) {
+      case "top":
+        wear = outfit["top"];
+        break;
+      case "bottom":
+        wear = outfit["bottom"];
+        break;
+      case "shoes":
+        wear = outfit["shoes"];
+        break;
+      case "accessories":
+        wear = outfit["accessories"];
+        break;
+
+      default:
+        wear = outfit['things'];
+        break;
+    }
+
     try {
+      print(wear);
       var request =
           http.Request('POST', Uri.parse('https://google.serper.dev/shopping'));
       request.body = json.encode({
-        "q":
-            'For $gender, the top is $top, the bottom is $bottom, the shoes is $shoes and the accessories is $accessories, the total budget is $budget'
+        "q": 'For $gender, provide $wear within the budget of $budget/4 in usd'
       });
       request.headers.addAll(
           {'X-API-KEY': serperApiKey, 'Content-Type': 'application/json'});

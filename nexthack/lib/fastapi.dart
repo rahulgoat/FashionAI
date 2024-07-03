@@ -100,6 +100,8 @@ class Fastapi {
       Map<String, dynamic> decodedJson = jsonDecode(innerJsonString);
       List<Map<String, dynamic>> outfits =
           List<Map<String, dynamic>>.from(decodedJson['response']);
+
+      print(outfits);
       return outfits;
     } else {
       return [];
