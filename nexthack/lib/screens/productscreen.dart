@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:nexthack/serper.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -26,6 +24,8 @@ class ProductsPage extends StatefulWidget {
 class _ProductsPageState extends State<ProductsPage> {
   late Future<List<Map<String, dynamic>>> _products;
   List<Map<String, dynamic>> _productList = [];
+  bool isfoot = false;
+  String _selectedCategory = "top";
 
   @override
   void initState() {
@@ -36,9 +36,10 @@ class _ProductsPageState extends State<ProductsPage> {
         _productList = value;
       });
     });
+    _fetchProducts(_selectedCategory, false);
   }
 
-  Future<void> _fetchProducts(String things) async {
+  Future<void> _fetchProducts(String things, bool foot) async {
     Serper serper = Serper();
     List<Map<String, dynamic>> products = await serper.serpercall(
       widget.gender,
@@ -48,6 +49,8 @@ class _ProductsPageState extends State<ProductsPage> {
     );
     setState(() {
       _productList = products;
+      isfoot = foot;
+      _selectedCategory = things;
     });
   }
 
@@ -89,33 +92,101 @@ class _ProductsPageState extends State<ProductsPage> {
                       width: 10,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _fetchProducts("top"),
-                      icon: const Icon(Icons.checkroom),
-                      label: const Text("Top"),
+                      onPressed: () => _fetchProducts("top", false),
+                      icon: Icon(
+                        Icons.checkroom,
+                        color: _selectedCategory == "top"
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      label: Text(
+                        "Top",
+                        style: TextStyle(
+                          color: _selectedCategory == "top"
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _selectedCategory == "top"
+                            ? Colors.deepPurple
+                            : Colors.white,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _fetchProducts("bottom"),
-                      icon: const Icon(Icons.accessibility_new),
-                      label: const Text("Bottom"),
+                      onPressed: () => _fetchProducts("bottom", false),
+                      icon: Icon(
+                        Icons.accessibility_new,
+                        color: _selectedCategory == "bottom"
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      label: Text(
+                        "Bottom",
+                        style: TextStyle(
+                          color: _selectedCategory == "bottom"
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _selectedCategory == "bottom"
+                            ? Colors.deepPurple
+                            : Colors.white,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _fetchProducts("shoes"),
-                      icon: const Icon(Icons.directions_run),
-                      label: const Text("Shoes"),
+                      onPressed: () => _fetchProducts("shoes", true),
+                      icon: Icon(
+                        Icons.directions_run,
+                        color: _selectedCategory == "shoes"
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      label: Text(
+                        "Shoes",
+                        style: TextStyle(
+                          color: _selectedCategory == "shoes"
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _selectedCategory == "shoes"
+                            ? Colors.deepPurple
+                            : Colors.white,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _fetchProducts("accessories"),
-                      icon: const Icon(Icons.watch),
-                      label: const Text("Accessories"),
+                      onPressed: () => _fetchProducts("accessories", false),
+                      icon: Icon(
+                        Icons.watch,
+                        color: _selectedCategory == "accessories"
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      label: Text(
+                        "Accessories",
+                        style: TextStyle(
+                          color: _selectedCategory == "accessories"
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _selectedCategory == "accessories"
+                            ? Colors.deepPurple
+                            : Colors.white,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -165,14 +236,6 @@ class _ProductsPageState extends State<ProductsPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.5),
-            //     spreadRadius: 5,
-            //     blurRadius: 7,
-            //     offset: const Offset(0, 3),
-            //   ),
-            // ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -185,7 +248,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   product['imageUrl'],
                   height: 200,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  fit: isfoot == true ? BoxFit.fill : BoxFit.cover,
                   alignment: AlignmentDirectional.topStart,
                   filterQuality: FilterQuality.high,
                 ),
@@ -219,7 +282,12 @@ class _ProductsPageState extends State<ProductsPage> {
                       onPressed: () {
                         _launchURL(context, product['link']);
                       },
-                      child: const Text('View Product'),
+                      child: const Text(
+                        'View Product',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple),
                     ),
                   ],
                 ),
@@ -233,8 +301,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
   void _launchURL(BuildContext context, String url) async {
     Uri uri = Uri.parse(url);
-    if (await canLaunch(uri.toString())) {
-      await launch(uri.toString());
+    if (await launchUrl(uri)) {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not launch $url')),

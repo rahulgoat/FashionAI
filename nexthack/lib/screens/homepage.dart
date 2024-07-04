@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexthack/screens/genderpage.dart';
+import 'package:nexthack/screens/genderscreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/genderpage.jpg"),
             fit: BoxFit.cover,
@@ -49,39 +49,46 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               children: [
                 Column(
                   children: [
-                    SizedBox(height: 30), // Adjust according to your design
-                    Image.asset(
-                      'assets/logo.png', // Replace with your logo asset
-                      width: 40,
-                      height: 40,
+                    SizedBox(
+                      height: 50,
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      'fashiongenie',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Adjust according to your design
+                        Image.asset(
+                          'assets/logo.png', // Replace with your logo asset
+                          width: 40,
+                          height: 40,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'SonicStyles',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontFamily: 'Agrandir-Regular'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Column(
+                const Column(
                   children: [
                     Text(
-                      'Unleash the power of real genie',
+                      'Unleash the power of real sonic',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontFamily: 'Agrandir-Regular'),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'AI powered Genie for personalized fashion',
+                      'AI powered Sonic for personalized fashion',
                       style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                      ),
+                          color: Colors.white54,
+                          fontSize: 14,
+                          fontFamily: 'Agrandir-Grandlight'),
                     ),
                   ],
                 ),
@@ -94,7 +101,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                genderpage(), // Replace with your target screen
+                                const GenderScreen(), // Replace with your target screen
                           ),
                         );
                       },
@@ -106,7 +113,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             child: Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                gradient: RadialGradient(
+                                gradient: const RadialGradient(
                                   colors: [Colors.purple, Colors.transparent],
                                   stops: [0.5, 1],
                                 ),
@@ -122,9 +129,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 radius: 50,
                                 backgroundColor: Colors.black,
                                 child: Image.asset(
-                                  'assets/logo.png', // Replace with your flash icon asset
-                                  width: 50,
-                                  height: 50,
+                                  'assets/purple.png',
+                                  width: 80,
+                                  height: 80,
                                 ),
                               ),
                             ),
@@ -132,15 +139,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                     ),
-                    SizedBox(height: 40),
-                    Text(
-                      'Tap to start the genie ✨',
+                    const SizedBox(height: 40),
+                    const Text(
+                      'Tap to start the Sonic ✨',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Agrandir-Regular'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     // Text(
                     //   '©2030 FashionGenie. All rights reserved.',
                     //   style: TextStyle(

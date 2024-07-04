@@ -74,11 +74,11 @@ class _OccasionScreenState extends State<OccasionScreen>
               fit: BoxFit.cover,
             ),
           ),
-          child: SizedBox(
-            height: 800,
-            child: Stack(
-              children: [
-                Column(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SingleChildScrollView(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     FadeTransition(
@@ -139,9 +139,9 @@ class _OccasionScreenState extends State<OccasionScreen>
                                         radius: 50,
                                         backgroundColor: Colors.black,
                                         child: Image.asset(
-                                          'assets/logo.png',
-                                          width: 50,
-                                          height: 50,
+                                          'assets/purple.png',
+                                          width: 80,
+                                          height: 80,
                                         ),
                                       ),
                                     ),
@@ -150,7 +150,7 @@ class _OccasionScreenState extends State<OccasionScreen>
                               ),
                               const SizedBox(height: 100),
                               const Text(
-                                'On which Occasion you want to wear 🤔',
+                                'On what Occasion you want to wear 🤔',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
@@ -211,7 +211,7 @@ class _OccasionScreenState extends State<OccasionScreen>
                                       horizontal: 30, vertical: 15),
                                 ),
                                 child: const Text(
-                                  'Let\'s go Genie  ✨',
+                                  'Let\'s go Sonic  ✨',
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
@@ -222,8 +222,8 @@ class _OccasionScreenState extends State<OccasionScreen>
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
   }

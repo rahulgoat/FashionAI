@@ -12,22 +12,26 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   http: ^1.2.0
-  speech_to_text: ^6.6.2
   camera: ^0.10.5+9
   image_picker: ^1.0.8
-  dash_chat: ^1.1.16
   google_generative_ai: ^0.4.3
   url_launcher: ^6.3.0
   google_fonts: ^6.2.1
   card_swiper: ^3.0.1
   cached_network_image: ^3.3.1
   material_design_icons_flutter: ^7.0.7296
+  lottie: ^3.1.2
+  flutter_launcher_icons: ^0.13.1
   
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/purple.png"
 
 flutter:
   uses-material-design: true
@@ -36,13 +40,15 @@ flutter:
     - assets/logo.png
     - assets/background.jpeg
     - assets/genderpage.jpg
-    - assets/images.png
-    - assets/Image_0.png
-    - assets/Image_1.png
-    - assets/Image_2.png
-    - assets/Image_3.png
+    - assets/purple.png
+    - assets/animations/
 
   fonts:
+    - family: Agrandir
+      fonts:
+        - asset: assets/fonts/Agrandir-GrandLight.otf
+        - asset: assets/fonts/Agrandir-Regular.otf
     - family: Georgia
       fonts:
         - asset: assets/fonts/Georgia.ttf
+        

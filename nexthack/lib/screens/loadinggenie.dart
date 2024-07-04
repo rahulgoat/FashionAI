@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nexthack/geminiapi.dart';
 import 'package:nexthack/screens/productscreen.dart';
 import 'package:nexthack/serper.dart';
+import 'package:lottie/lottie.dart';
+import 'package:nexthack/geminiapi.dart';
+import 'dart:async';
 
 class LoadingGenie extends StatefulWidget {
   final String gender, occasion, budget;
@@ -32,8 +34,16 @@ class _LoadingGenieState extends State<LoadingGenie>
   @override
   void initState() {
     super.initState();
-    _futureOutfits = widget.futureOutfits;
+    _futureOutfits = widget.futureOutfits ?? fetchOutfits();
     _pageController = PageController(viewportFraction: 0.8);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchOutfits() async {
+    return await GeminiApi(
+            gender: widget.gender,
+            occasion: widget.occasion,
+            xfilePick: widget.xfilePick)
+        .sendImageToGeminiAPI();
   }
 
   String getFirstSentence(String text) {
@@ -74,10 +84,9 @@ class _LoadingGenieState extends State<LoadingGenie>
                 child: Text(
                   'Outfits which will be perfect for you 🌟',
                   style: TextStyle(
-                    fontFamily: 'Georgia',
+                    fontFamily: 'Agrandir-Regular',
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -85,7 +94,7 @@ class _LoadingGenieState extends State<LoadingGenie>
               const Text(
                 'Select your preferred outfit.',
                 style: TextStyle(
-                  fontFamily: 'Georgia',
+                  fontFamily: 'Agrandir-GrandLight',
                   color: Colors.white54,
                   fontSize: 14,
                 ),
@@ -95,32 +104,21 @@ class _LoadingGenieState extends State<LoadingGenie>
                   future: _futureOutfits,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Color.fromRGBO(114, 80, 161, 1),
-                          color: Colors.grey,
-                        ),
+                      return Center(
+                        //     child: LottieBuilder.asset(
+                        //   'assets/animations/loading.json',
+                        //   frameRate: FrameRate.max,
+                        // ));
+                        child: CircularProgressIndicator(),
                       );
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              color: Colors.deepPurple,
-                            ),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Text(
-                              "Redirecting to Image page",
-                              style: TextStyle(color: Colors.grey),
-                            )
-                          ],
-                        ),
-                      );
+                      return Center(
+                          child: LottieBuilder.asset(
+                        'assets/animations/loading.json',
+                        frameRate: FrameRate.max,
+                      ));
                     } else {
                       if (!_outfitsAdded) {
                         List<Map<String, dynamic>> outfits = snapshot.data!;
@@ -155,88 +153,80 @@ class _LoadingGenieState extends State<LoadingGenie>
 
   Widget _buildItem(Map<String, dynamic> outfit) {
     return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height:
-            MediaQuery.of(context).size.height - 590, // Adjust width as needed
-        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(114, 80, 161, 1),
-          gradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[
-              Color.fromRGBO(114, 80, 161, 1),
-              Color.fromARGB(255, 138, 79, 152),
+      child: IntrinsicHeight(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(114, 80, 161, 1),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color.fromRGBO(114, 80, 161, 1),
+                Color.fromARGB(255, 138, 79, 152),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: SizedBox(
-          height: 155,
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      outfit['Outfit_name'] ?? 'No Name',
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Text(
-                      getFirstSentence(
-                          outfit['description'] ?? 'No Description'),
-                      textAlign: TextAlign.justify,
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_forward),
-                      color: Colors.grey[300],
-                      onPressed: () {
-                        Future<List<Map<String, dynamic>>> products =
-                            Serper().serpercall(
-                          widget.gender,
-                          widget.budget,
-                          outfit,
-                          'top',
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductsPage(
-                              products: products,
-                              budget: widget.budget,
-                              gender: widget.gender,
-                              outfit: outfit,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+              Text(
+                outfit['Outfit_name'] ?? 'No Name',
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 20.0,
+                  fontFamily: "Agrandir-Regular",
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 10), // Space between text and icon
+              const SizedBox(height: 10.0),
+              Text(
+                getFirstSentence(outfit['description'] ?? 'No Description'),
+                textAlign: TextAlign.justify,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white70,
+                  fontFamily: "Agrandir-GrandLight",
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Center(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  color: Colors.grey[300],
+                  onPressed: () {
+                    Future<List<Map<String, dynamic>>> products =
+                        Serper().serpercall(
+                      widget.gender,
+                      widget.budget,
+                      outfit,
+                      'top',
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductsPage(
+                          products: products,
+                          budget: widget.budget,
+                          gender: widget.gender,
+                          outfit: outfit,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),

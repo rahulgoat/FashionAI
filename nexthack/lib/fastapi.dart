@@ -93,17 +93,21 @@ class Fastapi {
     );
 
     print('FastAPI Response Status: ${apiResponse.statusCode}');
+    try {
+      if (apiResponse.statusCode == 200) {
+        List<dynamic> jsonResponse = json.decode(apiResponse.body);
+        String innerJsonString = jsonResponse[0];
+        Map<String, dynamic> decodedJson = jsonDecode(innerJsonString);
+        List<Map<String, dynamic>> outfits =
+            List<Map<String, dynamic>>.from(decodedJson['response']);
 
-    if (apiResponse.statusCode == 200) {
-      List<dynamic> jsonResponse = json.decode(apiResponse.body);
-      String innerJsonString = jsonResponse[0];
-      Map<String, dynamic> decodedJson = jsonDecode(innerJsonString);
-      List<Map<String, dynamic>> outfits =
-          List<Map<String, dynamic>>.from(decodedJson['response']);
-
-      print(outfits);
-      return outfits;
-    } else {
+        print(outfits);
+        return outfits;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      game1(responseText, gender, occasion);
       return [];
     }
   }

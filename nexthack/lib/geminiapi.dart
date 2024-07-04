@@ -15,8 +15,7 @@ class GeminiApi {
   Future<List<Map<String, dynamic>>> sendImageToGeminiAPI() async {
     Future<List<Map<String, dynamic>>>? _futureOutfits;
 
-    const apiKey =
-        'AIzaSyCKhUYONJJe5WJJSL7xQgvb22L38NALqX0'; // Replace with your actual API key
+    const apiKey = 'Use your api key';
 
     try {
       final model = GenerativeModel(model: 'gemini-pro-vision', apiKey: apiKey);
